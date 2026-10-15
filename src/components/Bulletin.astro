@@ -1,0 +1,113 @@
+---
+// The notices are fetched in the browser (see the script), so a notice you approve
+// shows up straight away – no need to rebuild the website.
+---
+<div class="bulletin">
+  <div class="head">
+    <h2 id="bulletin-title">anslagstavla</h2>
+    <a class="add" href="/anslagstavla/ny/">lägg upp</a>
+  </div>
+
+  <!-- tabindex="0" lets keyboard users scroll this box on desktop -->
+  <div class="scroll" tabindex="0" role="region" aria-labelledby="bulletin-title">
+    <p id="notice-message" class="message" role="status">laddar…</p>
+    <ul id="notice-list"></ul>
+  </div>
+</div>
+
+<!-- One card. The script copies this for every notice. -->
+<template id="notice-template">
+  <li class="card">
+    <h3></h3>
+    <p class="body"></p>
+    <p class="contact"><span>kontakt: </span><span class="value"></span></p>
+    <time></time>
+  </li>
+</template>
+
+<script>
+  import { fetchNotices, formatDate } from '../lib/notices.js';
+
+  const list = document.getElementById('notice-list');
+  const message = document.getElementById('notice-message');
+  const template = document.getElementById('notice-template');
+
+  (async () => {
+    try {
+      const notices = await fetchNotices();
+      if (notices.length === 0) {
+        message.textContent = 'inga inlägg än.';
+        return;
+      }
+      for (const n of notices) {
+        const card = template.content.firstElementChild.cloneNode(true);
+        // textContent (never innerHTML) so nothing a visitor types can run as code
+        card.querySelector('h3').textContent = n.title;
+        card.querySelector('.body').textContent = n.description;
+        card.querySelector('.value').textContent = n.contact;
+        const time = card.querySelector('time');
+        time.dateTime = n.created_at;
+        time.textContent = formatDate(n.created_at);
+        list.append(card);
+      }
+      message.hidden = true;
+    } catch (err) {
+      console.error(err);
+      message.textContent = 'Kunde inte hämta anslagstavlan just nu. Försök igen senare.';
+    }
+  })();
+</script>
+
+<style>
+  .bulletin {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    border-left: var(--line) solid var(--ink);
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem 0.8rem;
+  }
+  h2 { margin: 0; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+  .add {
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.85rem;
+    border: 1.5px solid var(--ink);
+    padding: 0.3rem 0.7rem;
+  }
+  .add:hover { background: var(--ink); color: var(--paper); }
+
+  /* DESKTOP: only this box scrolls */
+  .scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 0.25rem 1.25rem 1.5rem; }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1rem; }
+  .message { margin: 0 0 1rem; font-size: 0.9rem; }
+
+  .card {
+    border: 1.5px solid var(--ink);
+    padding: 0.7rem 0.85rem 0.85rem;
+    background: var(--paper);
+    overflow-wrap: anywhere;
+  }
+  h3 { margin: 0 0 0.25rem; font-size: 1.05rem; font-weight: 400; font-style: italic; }
+  .card p { margin: 0; font-size: 0.8rem; line-height: 1.6; }
+  .body { white-space: pre-line; }   /* keep line breaks people type */
+  .contact { margin-top: 1.1rem !important; }
+  time { display: block; margin-top: 0.9rem; font-size: 0.75rem; font-weight: 700; }
+
+  /* MOBILE: no inner scrolling, the whole page scrolls instead */
+  @media (max-width: 767px) {
+    .bulletin { height: auto; border-left: 0; padding: 3rem 1.25rem 2rem; }
+    .head { padding: 0 0 1rem; }
+    h2 { font-size: 2rem; }
+    .add { font-size: 0.95rem; }
+    .scroll { overflow: visible; padding: 0; }
+    h3 { font-size: 1.15rem; }
+    .card p, time { font-size: 0.95rem; }
+  }
+</style>

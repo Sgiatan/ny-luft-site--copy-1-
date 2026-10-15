@@ -1,0 +1,71 @@
+---
+import { artworks } from '../data/art.js';
+---
+<!-- The artwork is chosen in the browser on every load (see the script below).
+     The <noscript> block is what people with JavaScript switched off will see. -->
+<figure class="art">
+  <img class="art__img" id="art-img" alt="" hidden />
+  <figcaption class="art__credit">
+    <strong id="art-title"></strong>
+    <em id="art-artist"></em>
+  </figcaption>
+  <noscript>
+    <img class="art__img" src={artworks[0].src} alt={artworks[0].alt} />
+    <figcaption class="art__credit">
+      <strong>{artworks[0].title}</strong>
+      <em>{artworks[0].artist}</em>
+    </figcaption>
+  </noscript>
+</figure>
+
+<script define:vars={{ artworks }}>
+  const pick = artworks[Math.floor(Math.random() * artworks.length)];
+  const img = document.getElementById('art-img');
+  img.src = pick.src;
+  img.alt = pick.alt;
+  img.hidden = false;
+  document.getElementById('art-title').textContent = pick.title;
+  document.getElementById('art-artist').textContent = pick.artist;
+</script>
+
+<style>
+  .art {
+    position: relative;
+    margin: 0;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    padding: 2rem 2rem 4.5rem;
+  }
+  .art__img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - var(--header-h) - 9rem);
+  }
+  .art__credit {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.25rem;
+    text-align: right;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+  .art__credit strong, .art__credit em { display: block; }
+
+  @media (max-width: 767px) {
+    .art {
+      display: block;
+      height: auto;
+      padding: 2.5rem 1.5rem 1rem;
+      text-align: center;
+    }
+    .art__img {
+      margin-inline: auto;
+      max-width: min(100%, 22rem);
+      max-height: 60vh;
+    }
+    .art__credit { position: static; text-align: center; margin-top: 1rem; }
+  }
+</style>

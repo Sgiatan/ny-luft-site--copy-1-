@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="lägg upp på anslagstavlan">
+  <div class="page">
+    <h1>lägg upp på anslagstavlan</h1>
+    <p class="intro">
+      Vi läser igenom alla notiser innan de visas. Kontaktuppgiften du anger blir{' '}
+      <strong>synlig för alla</strong> om notisen godkänns.
+    </p>
+
+    <form id="notice-form" novalidate>
+      <div class="field">
+        <label for="title">rubrik</label>
+        <input id="title" name="title" type="text" maxlength="80" required autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <label for="description">beskrivning</label>
+        <textarea id="description" name="description" rows="6" maxlength="500" required></textarea>
+        <p class="hint" id="description-hint">Max 500 tecken.</p>
+      </div>
+
+      <div class="field">
+        <label for="contact">kontakt</label>
+        <input id="contact" name="contact" type="text" maxlength="100" required
+               autocomplete="off" aria-describedby="contact-hint" />
+        <p class="hint" id="contact-hint">Telefonnummer, e-post eller Instagram – visas offentligt.</p>
+      </div>
+
+      <!-- Honeypot: invisible to people, but simple spam bots fill it in. -->
+      <div class="hp" aria-hidden="true">
+        <label>Lämna tomt <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <button type="submit" id="submit">skicka in</button>
+      <p id="form-status" class="status" role="status"></p>
+    </form>
+
+    <div id="form-done" class="done" tabindex="-1" hidden>
+      <h2>tack!</h2>
+      <p>Din notis har skickats till oss. Om vi godkänner den dyker den upp på anslagstavlan.</p>
+      <p><a href="/">tillbaka till startsidan</a></p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import { submitNotice } from '../../lib/notices.js';
+
+  const form = document.getElementById('notice-form') as HTMLFormElement;
+  const button = document.getElementById('submit') as HTMLButtonElement;
+  const status = document.getElementById('form-status')!;
+  const done = document.getElementById('form-done')!;
+
+  function showDone() {
+    form.hidden = true;
+    done.hidden = false;
+    done.focus();
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+
+    // Bots fill in the hidden field. Pretend it worked, send nothing.
+    if (data.get('website')) return showDone();
+
+    const title = String(data.get('title')).trim();
+    const description = String(data.get('description')).trim();
+    const contact = String(data.get('contact')).trim();
+    if (!title || !description || !contact) {
+      status.textContent = 'Fyll i alla tre fälten.';
+      return;
+    }
+
+    button.disabled = true;
+    status.textContent = 'skickar…';
+    try {
+      await submitNotice({ title, description, contact });
+      showDone();
+    } catch (err) {
+      console.error(err);
+      status.textContent = 'Något gick fel och notisen skickades inte. Försök igen om en stund.';
+      button.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  h1 { margin: 0 0 1rem; font-size: 1.6rem; line-height: 1.2; }
+  .intro { margin: 0 0 1.75rem; max-width: 34rem; }
+  form, .done { max-width: 34rem; }
+
+  .field { margin-bottom: 1.4rem; }
+  label { display: block; margin-bottom: 0.35rem; font-weight: 700; }
+  input, textarea {
+    width: 100%;
+    font: inherit;
+    color: inherit;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: 0;
+    padding: 0.6rem 0.7rem;
+  }
+  textarea { resize: vertical; }
+  .hint { margin: 0.35rem 0 0; font-size: 0.85rem; }
+
+  button {
+    font: inherit;
+    font-weight: 700;
+    color: var(--paper);
+    background: var(--ink);
+    border: 1.5px solid var(--ink);
+    padding: 0.6rem 1.4rem;
+    cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: var(--paper); color: var(--ink); }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .status { min-height: 1.5em; margin: 0.9rem 0 0; }
+
+  .done h2 { margin: 0 0 0.75rem; font-size: 1.6rem; }
+  .done:focus { outline: none; }
+
+  /* visually hidden but still "there" for bots */
+  .hp { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+</style>

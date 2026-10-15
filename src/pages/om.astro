@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="om">
+  <div class="about">
+    <img class="flower" src="/brand/NLKS blomma 2.png" alt="" />
+    <div class="text">
+      <p>
+        Kollektivinitiativet <strong>NY LUFT KOMMA SKALL</strong> vill omdefiniera kulturupplevelsen
+        och påminna om att alla människor kan skapa, dela och vara kreativa. Det ligger i vår natur.
+        Men idag kilar friktionsmoment in sig allt för ofta mellan oss och denna upplevelse.
+      </p>
+      <p>Det kollektiva skapandet behöver syre.</p>
+      <p>
+        Vi arrangerar dela-med-sig-kvällar där du som skapar, oavsett uttryck eller erfarenhet, kan dela
+        med dig av ditt skapande. Varje kväll är unik och formas efter deltagarna. Kom och lufta ditt
+        senaste kreativa projekt!
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about {
+    min-height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 2rem;
+    align-items: center;
+    padding: 2rem var(--page-pad);
+  }
+  .flower { width: min(100%, 30rem); height: auto; justify-self: center; }
+  .text { max-width: 36rem; font-size: 1.05rem; line-height: 1.65; }
+  p { margin: 0 0 1.4rem; }
+
+  @media (max-width: 767px) {
+    .about { display: block; padding: 1.5rem 1.25rem 2.5rem; }
+    .flower { display: none; }
+  }
+</style>

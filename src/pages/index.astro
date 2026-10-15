@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArtPanel from '../components/ArtPanel.astro';
+import Bulletin from '../components/Bulletin.astro';
+---
+<BaseLayout>
+  <div class="home">
+    <ArtPanel />
+    <Bulletin />
+  </div>
+</BaseLayout>
+
+<style>
+  /* DESKTOP: art on the left (stays put), bulletin board on the right (scrolls inside) */
+  .home {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(18rem, 28vw, 27rem);
+  }
+  /* MOBILE: everything stacked, page scrolls */
+  @media (max-width: 767px) {
+    .home { display: block; height: auto; }
+  }
+</style>

@@ -1,0 +1,74 @@
+---
+// To add a page to the menu, add one line to `links`.
+// `short` is an optional shorter label that is used on mobile.
+const links = [
+  { href: '/om/', label: 'om' },
+  { href: '/kalender/', label: 'kalender' },
+  { href: '/natverk/', label: 'samarbetsnätverk', short: 'nätverk' },
+];
+
+// Work out which page we're on so its link can be bold.
+const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isCurrent = (href) => here === href.replace(/\/$/, '');
+---
+<header class="site-header">
+  <a class="logo" href="/">
+    <!-- Wordmark on desktop, flower icon on mobile. The alt text is what screen readers announce. -->
+    <picture>
+      <source media="(max-width: 767px)" srcset="/brand/NLKS blomma 1.png" />
+      <img src="/brand/NLKS Banner,bar.png" alt="Ny luft komma skall – startsida" />
+    </picture>
+  </a>
+
+  <nav aria-label="Huvudmeny">
+    {links.map((link) => (
+      <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+        {link.short ? (
+          <>
+            <span class="full">{link.label}</span>
+            <span class="short">{link.short}</span>
+          </>
+        ) : (
+          link.label
+        )}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    --logo-h: 1.8rem;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: 2.6rem;
+    padding-inline: 1rem;
+    background: var(--paper);
+    border-bottom: var(--line) solid var(--ink);
+  }
+  .logo { display: block; line-height: 0; }
+  .logo img { height: var(--logo-h); width: auto; display: block; }
+
+  nav { display: flex; align-items: center; gap: 2.6rem; }
+  nav a { color: inherit; text-decoration: none; font-size: 0.95rem; }
+  nav a:hover { text-decoration: underline; text-underline-offset: 0.3em; }
+  nav a[aria-current='page'] { font-weight: 700; }
+
+  .short { display: none; }
+
+  @media (max-width: 767px) {
+    .site-header {
+      --logo-h: 2.0rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      gap: 1.75rem;
+      padding-inline: 1.25rem;
+    }
+    nav { gap: 1.75rem; }
+    nav a { font-size: 1.05rem; }
+    .full { display: none; }
+    .short { display: inline; }
+  }
+</style>

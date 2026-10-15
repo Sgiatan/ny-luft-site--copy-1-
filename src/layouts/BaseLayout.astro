@@ -1,0 +1,30 @@
+---
+// EVERY page wraps its content in <BaseLayout>. The banner lives here, once,
+// so it automatically appears on every page (including ones you add later).
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+
+const { title } = Astro.props;
+const pageTitle = title ? `${title} – Ny luft komma skall` : 'Ny luft komma skall';
+---
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Hoppa till innehåll</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>
