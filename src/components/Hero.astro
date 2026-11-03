@@ -1,0 +1,146 @@
+---
+import { skies, words } from '../data/hero.js';
+---
+<!-- Full-screen intro. Hidden unless <html class="intro"> is set (see the little script in
+     pages/index.astro) – so it never shows on other pages or to people without JavaScript. -->
+<section class="hero" aria-label="Välkommen">
+  <img class="bg" id="hero-bg" alt="" />
+
+  <div class="inner">
+    <!-- The lettering is made of images, so screen readers get the words from aria-label instead -->
+    <div class="title" role="img" aria-label="Ny luft komma skall">
+      <div class="row">
+        <img src={words.nyLuft} alt="" />
+      </div>
+      <div class="row stack">
+        <img src={words.komma} alt="" />
+        <img src={words.skall} alt="" />
+      </div>
+    </div>
+
+    <button class="arrow" type="button" aria-label="Scrolla ner till startsidan">
+      <svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="currentColor"
+           stroke-width="6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M24 8v31M9 25l15 15 15-15" />
+      </svg>
+    </button>
+  </div>
+</section>
+
+<!-- 1. pick a random sky (only when the intro is actually showing, so the big picture
+        isn't downloaded for nothing when someone arrives from another page) -->
+<script define:vars={{ skies }}>
+  if (document.documentElement.classList.contains('intro')) {
+    document.getElementById('hero-bg').src = skies[Math.floor(Math.random() * skies.length)];
+  }
+</script>
+
+<!-- 2. the scroll rules -->
+<script>
+  const root = document.documentElement;
+  const hero = document.querySelector<HTMLElement>('.hero');
+
+  if (hero && root.classList.contains('intro')) {
+    const shell = document.querySelector<HTMLElement>('.shell')!;
+    const main = document.getElementById('main')!;
+    const arrow = hero.querySelector<HTMLButtonElement>('.arrow')!;
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    window.scrollTo(0, 0);
+
+    // The moment the banner reaches the top of the screen, the intro is deleted for good.
+    // Deleting it shifts everything up by its height, so we scroll by the same amount
+    // in the same instant – the person sees no jump at all.
+    let finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      window.removeEventListener('scroll', onScroll);
+      const heroHeight = hero!.offsetHeight;
+      const y = window.scrollY;
+      const hadFocus = hero!.contains(document.activeElement);
+      root.classList.remove('intro');
+      hero!.remove();
+      window.scrollTo(0, Math.max(0, y - heroHeight));
+      if (hadFocus) {            // the arrow button just disappeared: keep keyboard users oriented
+        main.tabIndex = -1;
+        main.focus({ preventScroll: true });
+      }
+    }
+
+    let queued = false;
+    function onScroll() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        if (window.scrollY >= hero!.offsetHeight - 2) finish();
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    arrow.addEventListener('click', () => {
+      shell.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+  }
+</script>
+
+<style>
+  .hero {
+    display: none;
+    position: relative;
+    height: 100vh;
+    height: 100svh;          /* "small" viewport: doesn't jump when phone toolbars slide away */
+    overflow: hidden;
+    background: #8fb3d9;     /* shown for a moment while the sky image loads */
+  }
+  :global(html.intro) .hero { display: block; }
+
+  .bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .inner {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4svh;
+    padding: 4svh 5vw;
+  }
+
+  .title { display: flex; flex-direction: column; align-items: center; }
+  .row { display: flex; justify-content: center; }
+  .stack { flex-direction: column; align-items: center; }   /* mobile: komma above skall */
+  .title img { display: block; width: auto; max-width: 90vw; height: min(17svh, 24vw); }
+
+  @media (min-width: 768px) {
+    .stack { flex-direction: row; align-items: flex-start; } /* desktop: side by side */
+    .title img { height: min(30svh, 18vw); }
+  }
+
+  .arrow {
+    background: none;
+    border: 0;
+    padding: 0.5rem;
+    color: var(--ink);
+    cursor: pointer;
+    line-height: 0;
+    animation: nudge 1.8s ease-in-out infinite;
+  }
+  .arrow:hover { animation-play-state: paused; }
+  @keyframes nudge {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .arrow { animation: none; }
+  }
+</style>

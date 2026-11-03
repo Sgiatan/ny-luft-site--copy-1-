@@ -1,9 +1,29 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
 import ArtPanel from '../components/ArtPanel.astro';
 import Bulletin from '../components/Bulletin.astro';
 ---
 <BaseLayout>
+  <!-- Runs before the page is painted, so the intro never flashes in or out.
+       The intro is shown on a first visit and on reload, but NOT when someone clicks
+       through to the homepage from another page of this site, or uses the Back button. -->
+  <script is:inline slot="head">
+    (function () {
+      try {
+        var nav = performance.getEntriesByType('navigation')[0];
+        var type = nav ? nav.type : 'navigate';
+        var fromThisSite = document.referrer && new URL(document.referrer).origin === location.origin;
+        if (type === 'back_forward' || (type === 'navigate' && fromThisSite)) return;
+      } catch (e) {}
+      document.documentElement.classList.add('intro');
+      history.scrollRestoration = 'manual';
+    })();
+  </script>
+
+  <Hero slot="intro" />
+
+  <h1 class="sr-only">Ny luft komma skall</h1>
   <div class="home">
     <ArtPanel />
     <Bulletin />

@@ -1,6 +1,7 @@
 ---
 // EVERY page wraps its content in <BaseLayout>. The banner lives here, once,
 // so it automatically appears on every page (including ones you add later).
+// Pages may also fill two optional slots: "head" (extra <head> tags) and "intro" (a section above the banner).
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 
@@ -19,12 +20,17 @@ const pageTitle = title ? `${title} – Ny luft komma skall` : 'Ny luft komma sk
       href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&display=swap"
       rel="stylesheet"
     />
+    <slot name="head" />
   </head>
   <body>
     <a class="skip-link" href="#main">Hoppa till innehåll</a>
-    <Header />
-    <main id="main">
-      <slot />
-    </main>
+    <!-- Optional full-screen section ABOVE the banner (only the homepage uses it) -->
+    <slot name="intro" />
+    <div class="shell">
+      <Header />
+      <main id="main">
+        <slot />
+      </main>
+    </div>
   </body>
 </html>

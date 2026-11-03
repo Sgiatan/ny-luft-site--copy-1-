@@ -1,0 +1,28 @@
+---
+const { title, body, phone, posted } = Astro.props;
+// posted looks like "2026-09-28T13:12" -> show "2026-09-28, 13:12"
+const [date, time] = posted.split('T');
+---
+<li class="card">
+  <h3>{title}</h3>
+  <p class="body">{body}</p>
+  <p class="phone">telefon: {phone}</p>
+  <time datetime={posted}>{date}, {time}</time>
+</li>
+
+<style>
+  .card {
+    border: 1.5px solid var(--ink);
+    padding: 0.7rem 0.85rem 0.85rem;
+    background: var(--paper);
+  }
+  h3 { margin: 0 0 0.25rem; font-size: 1.05rem; font-weight: 400; font-style: italic; }
+  p { margin: 0; font-size: 0.8rem; line-height: 1.6; }
+  .phone { margin-top: 1.1rem; }
+  time { display: block; margin-top: 0.9rem; font-size: 0.75rem; font-weight: 700; }
+
+  @media (max-width: 767px) {
+    h3 { font-size: 1.15rem; }
+    p, time { font-size: 0.95rem; }
+  }
+</style>

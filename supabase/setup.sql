@@ -4,13 +4,15 @@
 -- ============================================================
 
 -- 1. The table. Every notice starts as 'pending'.
+--    status is an "enum", which makes it a drop-down in the Supabase Table Editor.
+create type public.notice_status as enum ('pending', 'approved', 'rejected');
+
 create table public.notices (
   id          bigint generated always as identity primary key,
   title       text not null check (char_length(btrim(title))       between 1 and 80),
   description text not null check (char_length(btrim(description)) between 1 and 500),
   contact     text not null check (char_length(btrim(contact))     between 1 and 100),
-  status      text not null default 'pending'
-              check (status in ('pending', 'approved', 'rejected')),
+  status      public.notice_status not null default 'pending',
   created_at  timestamptz not null default now()
 );
 

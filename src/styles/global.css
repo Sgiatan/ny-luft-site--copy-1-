@@ -65,3 +65,11 @@ a:focus-visible, [tabindex]:focus-visible {
   background: var(--paper); padding: .5rem .75rem; border: var(--line) solid var(--ink);
 }
 .skip-link:focus { top: 1rem; }
+
+/* INTRO (homepage only). While <html class="intro"> is set, the page scrolls like a normal
+   page so the visitor can scroll down from the big title to the banner. As soon as they arrive,
+   the script removes the class (and the title) and the normal rules above take over again. */
+html.intro body { height: auto; overflow: visible; }
+@media (min-width: 768px) {
+  html.intro main { overflow: hidden; }   /* inner scroll boxes stay still until the intro is over */
+}

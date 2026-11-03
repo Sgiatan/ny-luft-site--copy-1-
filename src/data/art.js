@@ -86,13 +86,13 @@ export const artworks = [
     {
     src: '/art/Ludde1.jpg',
     alt: '',
-    title: 'STORT BORD: 12/11 – 26/11 – 10/12',
-    artist: 'Ludwig Pedersen',
+    title: 'STORT BORD på MARIKI, Artillerigatan 18 - 18:00 och framåt',
+    artist: '12/11 – 26/11 – 10/12',
   },
     {
     src: '/art/Ludde2.jpg',
     alt: '',
-    title: 'STORT BORD: 12/11 – 26/11 – 10/12',
-    artist: 'Ludwig Pedersen',
+    title: 'STORT BORD på MARIKI, Artillerigatan 18 - 18:00 och framåt',
+    artist: '12/11 – 26/11 – 10/12',
   },
 ];
