@@ -9,6 +9,12 @@
   --header-h: 3.5rem;          /* height of the top banner (desktop) */
   --page-pad: clamp(1.25rem, 4vw, 3rem);
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --wild-strawberry: #F83E81ff;
+  --periwinkle: #C1CAEBff;
+  --steel-blue: #6895B8ff;
+  --flame-orange: #F95713ff;
+  --powder-petal: #E7D9D2ff;
 }
 
 /* MOBILE breakpoint used everywhere in this project: max-width 767px */
